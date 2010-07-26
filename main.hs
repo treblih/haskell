@@ -1,0 +1,3 @@
+import SoftTool
+
+main = getc
