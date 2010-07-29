@@ -133,12 +133,14 @@ iverse :: [(a, a)] -> [(a, a)]
 iverse [] = []
 iverse ((a, b) : xs) = (b, a) : iverse xs
 
+{-
 merge :: Ord a => [a] -> [a] -> [a]
 merge [] b = b
 merge a [] = a
 merge (a1 : ax) (b1 : bx)
 	| a1 < b1 = a1 : merge ax (b1 : bx)
 	| otherwise = b1 : merge bx (a1: ax) 
+-}
 
 data May a = No | Ju a deriving Show
 get' :: Num n => [a] -> n -> May a
@@ -397,3 +399,19 @@ tabspaces ts = spacesToTabstop tablessPrefix ++ tabspaces rest'
 foldl' :: (a -> a -> a) -> a -> [a] -> a
 foldl' f acc [] = acc
 foldl' f acc (x:xs) = acc `seq` foldl' f acc xs
+
+-- split a list into a pair, one is larger than the target, the other is smaller
+{-
+split :: Ord a => a -> [a] -> ([a], [a]) -> ([a], [a])
+split n [] acc = acc
+split n (x:xs) (sml, lrg)
+  | x <= n = split n xs (sml ++ [x], lrg)
+  | otherwise = split n xs (sml, lrg ++ [x])
+
+quick_sort :: Ord a => [a] -> [a]
+quick_sort l = quick_sort' l []
+  where quick_sort' [] acc = acc
+        quick_sort' (x:xs) acc = quick_sort' (fst $ split x xs ([], []))
+	                           (x : 
+				   (quick_sort' (snd $ split x xs ([], [])) acc))
+-}

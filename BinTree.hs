@@ -97,3 +97,10 @@ postorder :: BinTree a -> [a]
 postorder t = postorder' t []
   where postorder' Nil acc = acc
         postorder' (Node n ls rs) acc = postorder' ls (postorder' rs acc) ++ [n]
+
+{- because of static & strong type system, haskell can't do this
+is_bintree :: BinTree a -> Bool
+is_bintree Nil = True
+is_bintree (Node _ ls rs) = is_bintree ls || is_bintree rs
+is_bintree _ = False
+-}
