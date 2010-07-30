@@ -3,6 +3,8 @@ module Soring (
   merge_sort
 ) where
 
+import Array
+
 quick_sort :: Ord a => [a] -> [a]
 quick_sort l = quick_sort' l []
   where
@@ -36,3 +38,16 @@ merge_sort l = ll2l (split l)
   merge xl@(x:xs) yl@(y:ys)
     | x <= y = x : merge xs yl
     | otherwise = y : merge ys xl
+
+
+-- type Bucket x n = Array x [(x, n)]
+
+bucket_sort :: (Ix i, Num i) => (i, i) -> [i] -> [i]
+bucket_sort bnd xs =
+  generate (fst bnd) (elems buckets) []
+    where
+    buckets = accumArray (+) 0 bnd [(n, 1) | n <- xs]
+
+    generate :: Num a => a -> [Int] -> [a] -> [a]
+    generate _ [] acc = acc -- finish condition
+    generate x (n:ns) acc = generate (x + 1) ns (acc ++ replicate n x)
