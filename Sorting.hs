@@ -4,6 +4,7 @@ module Soring (
 ) where
 
 import Array
+import Graph
 
 quick_sort :: Ord a => [a] -> [a]
 quick_sort l = quick_sort' l []
@@ -51,3 +52,12 @@ bucket_sort bnd xs =
     generate :: Num a => a -> [Int] -> [a] -> [a]
     generate _ [] acc = acc -- finish condition
     generate x (n:ns) acc = generate (x + 1) ns (acc ++ replicate n x)
+
+g = create True (1,6) [(1,2,0),(1,3,0),(1,4,0), 
+                        (3,6,0),(5,4,0),(6,2,0),
+                        (6,5,0)]
+
+inDegree g n  = [t | v<-nodes g, t<-adjacent g v]
+
+--topo_sort :: (Ix a, Num w) => Graph a w -> [a]
+--topo_sort 

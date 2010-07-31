@@ -1,4 +1,6 @@
 module Graph (
+  Array(..),
+  Ix(..),
   Graph,
   create,
   adjacent,
@@ -80,7 +82,8 @@ edges_ndrct g = [(x, y, unwrap $ g ! (x, y)) |
                   x <- nodes g, y <- nodes g, edge_in g x y]
 
 edges_drct g = [(x, y, unwrap $ g ! (x, y)) | 
-                 x <- nodes g, y <- nodes g, edge_in g x y, x < y]
+                 x <- nodes g, y <- range (x, u), edge_in g x y]
+  where (_, (u, _)) = bounds g
 
 unwrap :: Maybe a -> a
 unwrap (Just a) = a

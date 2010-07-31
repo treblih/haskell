@@ -3,6 +3,7 @@ module Stack(
   empty,
   is_empty,
   push,
+  pushl,
   pop,
   top
 ) where
@@ -22,6 +23,7 @@ instance Show a => Show (Stack a) where
 empty :: Stack a
 is_empty :: Stack a -> Bool
 push :: a -> Stack a -> Stack a
+pushl :: [a] -> Stack a -> Stack a
 pop :: Stack a -> Stack a
 top :: Stack a -> a
 
@@ -46,6 +48,10 @@ is_empty (Stack []) = True
 is_empty _ = False
 
 push x (Stack xs) = Stack (x:xs)
+
+-- pushl [] (Stack stk) = Stack stk
+-- pushl (x:xs) (Stack stk) = pushl xs (Stack (x:stk))
+pushl list s = foldr push s list
 
 pop (Stack []) = error "empty stack"
 pop (Stack (_:xs)) = Stack xs
