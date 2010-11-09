@@ -4,11 +4,14 @@ module Graph (
   Graph,
   create,
   adjacent,
+  shoot,
   nodes,
   weight,
   edge_in,
   edges_ndrct,
-  edges_drct
+  edges_drct,
+  indegree,
+  indegree_0
 ) where
 
 import Array
@@ -24,8 +27,10 @@ data Graph n w = Vertex n [((Graph n w), w)]
 -}
 
 create :: (Ix n, Num w) => Bool -> (n, n) -> [(n, n, w)] -> Graph n w
-  -- figure out all adjacent vertices
+  -- all adjacent vertices in undirected graph
 adjacent :: (Ix n, Num w) => Graph n w -> n -> [n]
+  -- all shot by the one in directed graph
+shoot :: (Ix n, Num w) => Graph n w -> n -> [n]
   -- how many vertices
 nodes :: (Ix n, Num w) => Graph n w -> [n]
 weight :: (Ix n, Num w, Show n) => Graph n w -> n -> n -> w
@@ -33,6 +38,8 @@ weight :: (Ix n, Num w, Show n) => Graph n w -> n -> n -> w
 edge_in :: (Ix n, Num w) => Graph n w -> n -> n -> Bool
 edges_ndrct :: (Ix n, Num w) => Graph n w -> [(n, n, w)]
 edges_drct :: (Ix n, Num w) => Graph n w -> [(n, n, w)]
+indegree :: (Ix n, Num w) => Graph n w -> n -> Int
+indegree_0 :: (Ix n, Num n, Num w) => Graph n w -> [n]
 
 {- adjacent list implementation
 type Graph n w = Array n [(n, w)]
@@ -44,6 +51,8 @@ create dir bnd xs =
        else [(x2, (x1, w)) | (x1, x2, w) <- xs, x1 /= x2])
 
 adjacent g x = map fst (g ! x)
+
+shoot = adjacent
 
 nodes g = indices g
 
@@ -72,6 +81,8 @@ create dir bnd@(l, u) xs =
 
 adjacent g x = [y | y <- nodes g, g ! (x, y) /= Nothing]
 
+shoot = adjacent
+
 nodes g = range (l, u) where ((l, _), (u, _)) = bounds g
 
 weight g x y = w where Just w = g ! (x, y)
@@ -87,3 +98,22 @@ edges_drct g = [(x, y, unwrap $ g ! (x, y)) |
 
 unwrap :: Maybe a -> a
 unwrap (Just a) = a
+
+indegree g n  = length [y | x <- nodes g, y <- adjacent g x, (n == y)]
+
+  -- (Num n) the index need to be added
+  -- just for number node, not Enum ones
+  -- indegree_0 :: (Ix n, Num n, Num w) => Graph n w -> [n]
+indegree_0 g = indegree_0' g l l []
+  where
+  ((l, _), (u, _)) = bounds g
+
+  indegree_0' g x y acc
+    | x == u && y == u =
+        if g ! (u, u) /= Nothing
+	   then acc
+	   else u:acc
+    | y == u && g ! (x, u) /= Nothing = acc
+    | x == u && g ! (u, y) == Nothing = indegree_0' g l (y + 1) (y:acc)
+    | g ! (x, y) /= Nothing = indegree_0' g l (y + 1) acc
+    | g ! (x, y) == Nothing = indegree_0' g (x + 1) y acc

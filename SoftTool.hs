@@ -1,10 +1,11 @@
-import IO
-import System
-import Data.Char
-import Data.List
+
+import System.IO
+import List
+import Char
 
 
 {- ================ 1. Bacis Character IO ================ -}
+
 getc :: IO (Maybe Char)
 getc = isEOF >>= (\eof -> 
   if eof
@@ -18,8 +19,8 @@ copy :: IO ()
 copy = getc >>= (\c -> 
   case c of
     Nothing -> return ()
-    Just c -> putc c >>
-              copy)
+    Just c -> putc c >> copy)
+
 copy' :: IO ()
 copy' = interact id
 
@@ -29,6 +30,8 @@ char_cnt = cnt 0 >>= return . show >>= putStrLn
 		  case c of
 		    Nothing -> return n
 		    Just c -> cnt $! n + 1)
+
+  -- (show . length) input   is a func which needs an arg
 char_cnt' :: IO ()
 char_cnt' = interact $ \input -> (show . length) input ++ "\n"
 
@@ -42,6 +45,7 @@ word_cnt = cnt False 0 >>= return . show >>= putStrLn
 	  | isSpace c = cnt False n
 	char_handler _ False n = cnt True $! n + 1  -- a new word start
 	char_handler _ True n  = cnt True n  -- inside a word
+
 word_cnt' :: IO ()
 word_cnt' = interact $ \input -> (show . length . words) input ++ "\n"
 
@@ -82,7 +86,9 @@ tab2spc = interact $ unlines . map (tab2spc' ts) . lines
 	tab2spc' (_:ns) (char:text) = char : tab2spc' ns text
 
 
+
 {- ================ 2. Bacis Processing ================ -}
+
 spc2tab :: IO ()
 spc2tab = interact $ unlines . map (spc2tab' ts) . lines
   where ts = cycle [4,3,2,1]
@@ -96,6 +102,9 @@ spc2tab = interact $ unlines . map (spc2tab' ts) . lines
 	  | otherwise = ' ' : spc2tab' ns text
 	spc2tab' (_:ns) (char:text) = char : spc2tab' ns text
 
-echo_args = getArgs >>= mapM_ putc . concat . intersperse " "
-	
-main = char_cnt
+-- echo_args = getArgs >>= mapM_ putc . concat . intersperse " "
+echo = getLine >>= (\l -> putStrLn l)
+
+aaa = putStrLn . snd . head
+main = putStrLn "aaa"
+       		"bbb"

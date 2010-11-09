@@ -1,10 +1,21 @@
 module Soring (
+  merge,
   quick_sort,
-  merge_sort
+  merge_sort,
+  bucket_sort,
+  topo_sort,
+  topo_sort_num
 ) where
 
 import Array
-import Graph
+import Graph.Graph
+
+merge :: Ord a => [a] -> [a] -> [a]
+merge x [] = x
+merge [] y = y
+merge xl@(x:xs) yl@(y:ys)
+  | x <= y = x : merge xs yl
+  | otherwise = y : merge ys xl
 
 quick_sort :: Ord a => [a] -> [a]
 quick_sort l = quick_sort' l []
@@ -33,12 +44,6 @@ merge_sort l = ll2l (split l)
   merge_pair l@[x] = l
   merge_pair (x:y:s) = merge x y : merge_pair s
 
-  merge :: Ord a => [a] -> [a] -> [a]
-  merge x [] = x
-  merge [] y = y
-  merge xl@(x:xs) yl@(y:ys)
-    | x <= y = x : merge xs yl
-    | otherwise = y : merge ys xl
 
 
 -- type Bucket x n = Array x [(x, n)]
@@ -53,11 +58,19 @@ bucket_sort bnd xs =
     generate _ [] acc = acc -- finish condition
     generate x (n:ns) acc = generate (x + 1) ns (acc ++ replicate n x)
 
-g = create True (1,6) [(1,2,0),(1,3,0),(1,4,0), 
-                        (3,6,0),(5,4,0),(6,2,0),
-                        (6,5,0)]
+topo_sort :: (Ix a, Num w) => Graph a w -> [a]
+topo_sort g = tsort [n | n <- nodes g, (indegree g n == 0)] []
+  where
+  tsort [] acc = acc
+  tsort (x:xs) acc
+    | elem x acc = tsort xs acc
+    | otherwise = tsort xs (x:(tsort (shoot g x) acc))
 
-inDegree g n  = [t | v<-nodes g, t<-adjacent g v]
-
---topo_sort :: (Ix a, Num w) => Graph a w -> [a]
---topo_sort 
+  -- just for digit DAG
+topo_sort_num :: (Ix a, Num a, Num w) => Graph a w -> [a]
+topo_sort_num g = tsort (indegree_0 g) []
+  where
+  tsort [] acc = acc
+  tsort (x:xs) acc
+    | elem x acc = tsort xs acc
+    | otherwise = tsort xs (x:(tsort (shoot g x) acc))

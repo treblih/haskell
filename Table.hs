@@ -5,16 +5,15 @@ module Table (
   update
 ) where
 
+new :: Eq key => [(key, val)] -> Table key val
+find :: Eq key => key -> Table key val -> val
+update :: Eq key => (key, val) -> Table key val -> Table key val
 
 {- function implementation
 newtype Table key val = Table (key -> val)
 
 instance Show (Table key val) where
   showsPrec _ _ str = showString "<<A Table>>" str
-
-new :: Eq key => [(key, val)] -> Table key val
-find :: Eq key => key -> Table key val -> val
-update :: Eq key => (key, val) -> Table key val -> Table key val
 
 new assoc = foldr update (Table (\_ -> error "item not found in table")) assoc
 
@@ -61,3 +60,12 @@ new t = Table (array (min, max) t)
 find key (Table t) = t ! key
 
 update q@(key, val) (Table t) = Table (t // [q])
+
+
+
+import BinTree
+
+newtype Table key val = Table (BinTree (key, val)) deriving Show
+
+new [] = Table empty
+new ((i, v) : xs) = Table (insert x )
