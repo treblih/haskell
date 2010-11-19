@@ -77,3 +77,59 @@ encode = map (\x -> (length x, head x)) . group
 -- encode = map (length &&& head) . group
 -- encode = let f x acc = (length x, head x) : acc
          -- in foldr f [] . group
+                                 --
+{- ================ 11 ================ -}
+data Amount a = Single a | Multiple Int a deriving (Show)
+encode' :: Eq a => [a] -> [Amount a]
+encode' =  map (\x -> if length x == 1 then Single (head x) else Multiple (length x) (head x)) . group
+
+{- ================ 12 ================ -}
+decode' :: Eq a => [Amount a] -> [a]
+decode' = foldr f []
+    where
+    f (Single x) acc = x:acc
+    f (Multiple n x) acc = replicate n x ++ acc
+{- decode' = concatMap f
+    where
+    f (Single x) = [x]
+    f (Multiple n x) = replicate n x -}
+
+{- ================ 13 ================ -}
+
+{- ================ 14 * ================ -}
+double :: [a] -> [a]
+double xs = (\x -> [x, x]) =<< xs   -- list monad
+-- double (x:xs) = x : x : double xs
+-- double xs = concat [[x, x] | x <- xs]
+--
+{- ================ 15 * ================ -}
+repli :: [a] -> Int -> [a]
+repli = flip $ concatMap . replicate
+-- repli xs n = -> concatMap (replicate n) xs
+--
+{- ================ 16 * ================ -}
+drop_every :: [a] -> Int -> [a]
+{- drop_every xs 0 = xs
+drop_every _ 1 = []
+drop_every [] _ = []
+drop_every xs n = take (n - 1) xs ++ drop_every (drop n xs) n -}
+-- drop_every xs n = [x | (x, i) <- zip xs [1..n], i `mod` n /= 0]
+drop_every xs n = map fst . filter ((n/=) . snd) $ zip xs (cycle [1..n])
+
+{- ================ 17 ================ -}
+split_at :: [a] -> Int -> ([a], [a])
+-- split_at xs n = (take n xs, drop n xs)
+split_at = flip $ splitAt
+
+{- ================ 18 ================ -}
+slice :: [a] -> Int -> Int -> [a]
+slice xs start end = take (end - start + 1) . drop (start - 1) $ xs
+
+{- ================ 19 ================ -}
+rotate :: [a] -> Int -> [a]
+rotate xs n
+    | n < 0 = drop xs ++ take (length xs + n) xs
+
+{- ================ 20 ================ -}
+remove_at :: Int -> [a] -> (a, [a])
+remove_at n xs = (xs !! n, take n xs ++ drop (n + 1) xs)
