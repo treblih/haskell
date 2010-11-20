@@ -415,3 +415,8 @@ quick_sort l = quick_sort' l []
 	                           (x : 
 				   (quick_sort' (snd $ split x xs ([], [])) acc))
 -}
+
+split_with :: (a -> Bool) -> [a] -> [[a]]
+split_with _ [] = [[]]
+split_with predict xs = takeWhile (not . predict) xs : 
+                        split_with predict (tail . dropWhile (not . predict) $ xs)
