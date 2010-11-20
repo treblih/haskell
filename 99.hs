@@ -1,3 +1,6 @@
+import Data.List (tails, sortBy)
+import Data.Ord (comparing)
+
 {- ================ 1 ================ -}
 last' :: [a] -> a
 last' [] = error "empty"
@@ -81,7 +84,11 @@ encode = map (\x -> (length x, head x)) . group
 {- ================ 11 ================ -}
 data Amount a = Single a | Multiple Int a deriving (Show)
 encode' :: Eq a => [a] -> [Amount a]
-encode' =  map (\x -> if length x == 1 then Single (head x) else Multiple (length x) (head x)) . group
+encode' =  map (\x -> 
+                if length x == 1 
+                then Single (head x) 
+                else Multiple (length x) 
+               (head x)) . group
 
 {- ================ 12 ================ -}
 decode' :: Eq a => [Amount a] -> [a]
@@ -128,8 +135,30 @@ slice xs start end = take (end - start + 1) . drop (start - 1) $ xs
 {- ================ 19 ================ -}
 rotate :: [a] -> Int -> [a]
 rotate xs n
-    | n < 0 = drop xs ++ take (length xs + n) xs
+    | n < 0 = drop (length xs + n) xs ++ take (length xs + n) xs
+    | otherwise = drop n xs ++ take n xs
 
 {- ================ 20 ================ -}
 remove_at :: Int -> [a] -> (a, [a])
 remove_at n xs = (xs !! n, take n xs ++ drop (n + 1) xs)
+
+{- ================ 21 ================ -}
+insert_at :: a -> [a] -> Int -> [a]
+insert_at x xs n = take (n - 1) xs ++ [x] ++ drop (n - 1) xs
+
+{- ================ 22 * ================ -}
+range' :: Int -> Int -> [Int]
+range' start end = [start..end]
+-- range' = enumFromTo
+--
+{- ================ 23 24 25 random ================ -}
+
+{- ================ 26 ================ -}
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _  = [ [] ]
+combinations n xs = [ y:ys | y:xs' <- tails xs
+                           , ys <- combinations (n-1) xs']
+
+{- ================ 28 ================ -}
+len_sort :: [String] -> [String]
+len_sort = sortBy (comparing length)
